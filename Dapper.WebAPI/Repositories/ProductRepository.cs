@@ -91,6 +91,7 @@ namespace Dapper.WebAPI.Repositories
                         Description = worksheet.Cells[row, 4].Value.ToString(),
                         Rate = decimal.Parse(worksheet.Cells[row, 5].Value.ToString()),
                         AddedOn = DateTime.Now,
+                        ModifiedOn = DateTime.Now,
                     };
 
                     products.Add(product);
@@ -104,13 +105,29 @@ namespace Dapper.WebAPI.Repositories
                     foreach (var product in products)
                     {
                         var existingProduct = await connection.QueryFirstOrDefaultAsync<Products>("SELECT * FROM Products WHERE Barcode = @Barcode", new { Barcode = product.Barcode });
-
+                        //var deletedProducts = await connection.QueryFirstOrDefaultAsync<Products>("SELECT * FROM Products WHERE Barcode NOT IN @Barcode", new { Barcode = product.Barcode }); 
+                        //Upload Products
                         if (existingProduct == null)
                         {
                             var sql = "INSERT INTO Products (Name, Description, Barcode, Rate, AddedOn) VALUES (@Name, @Description, @Barcode, @Rate, @AddedOn)";
                             result = await connection.ExecuteAsync(sql, product);
                         }
+                        //Update Products
+                        if (existingProduct != null)
+                        {
+                            var sql = "UPDATE Products SET Name = @Name, Description = @Description, Rate = @Rate, ModifiedOn = @ModifiedOn Where Barcode = @Barcode";
+                            result = await connection.ExecuteAsync(sql, product);
+                        }
+                        //if(deletedProducts != null)
+                        //{
+                        //    var sql = "DELETE FROM Products Where Barcode NOT IN @Barcode";
+                        //    result = await connection.ExecuteAsync(sql, product);
+                        //}
+
+
                     }
+                    //Delete Products
+                   
                     return result;
                 }
             }
