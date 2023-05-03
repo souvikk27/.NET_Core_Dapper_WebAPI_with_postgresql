@@ -2,6 +2,7 @@
 using Dapper.WebAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Dapper.WebAPI.Controllers
 {
@@ -44,6 +45,12 @@ namespace Dapper.WebAPI.Controllers
         public async Task<IActionResult> Update(Products product)
         {
             var data = await unitOfWork.Products.UpdateAsync(product);
+            return Ok(data);
+        }
+        [HttpPost("BulkUpload")]
+        public async Task<IActionResult> BulkUploadProduct(string filePath)
+        {
+            var data = await unitOfWork.Products.ImportExcelFileAsync(filePath);
             return Ok(data);
         }
     }
