@@ -71,6 +71,8 @@ namespace Dapper.WebAPI.Repositories
                 return result;
             }
         }
+
+        //This Function Takes Care Of Entire Create, Upload, Delete Opreation Based on Excel Modification
         public async Task<int> ImportExcelFileAsync(string filePath)
         {
             using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
@@ -102,29 +104,32 @@ namespace Dapper.WebAPI.Repositories
                 {
                     connection.Open();
                     var result = 0;
+                    // Upload or update products in the database
                     foreach (var product in products)
                     {
                         var existingProduct = await connection.QueryFirstOrDefaultAsync<Products>("SELECT * FROM Products WHERE Barcode = @Barcode", new { Barcode = product.Barcode });
-                        
-                        //Upload Products
                         if (existingProduct == null)
                         {
                             var sql = "INSERT INTO Products (Name, Description, Barcode, Rate, AddedOn) VALUES (@Name, @Description, @Barcode, @Rate, @AddedOn)";
                             result = await connection.ExecuteAsync(sql, product);
                         }
-                        //Update Products
                         if (existingProduct != null)
                         {
                             var sql = "UPDATE Products SET Name = @Name, Description = @Description, Rate = @Rate, ModifiedOn = @ModifiedOn Where Barcode = @Barcode";
                             result = await connection.ExecuteAsync(sql, product);
-                        }
-
-
-
+                        }    
                     }
-                    //Delete Products
-                   
+                    //Delete Products from Database
+                    var barcodesFromFile = products.Select(p => p.Barcode).ToList();
+                    var barcodesFromDb = (await connection.QueryAsync<string>("SELECT Barcode FROM Products")).ToList();
+                    var missingBarcodes = barcodesFromDb.Except(barcodesFromFile).ToList();
+                    foreach (var barcode in missingBarcodes)
+                    {
+                        var sql = "DELETE FROM Products WHERE Barcode = @Barcode";
+                        await connection.ExecuteAsync(sql, new { Barcode = barcode });
+                    }
                     return result;
+                    
                 }
             }
         }
