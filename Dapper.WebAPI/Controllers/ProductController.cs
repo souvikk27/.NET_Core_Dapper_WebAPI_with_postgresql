@@ -50,7 +50,7 @@ namespace Dapper.WebAPI.Controllers
         [HttpPost("BulkUpload")]
         public async Task<IActionResult> BulkUploadProduct(string filePath)
         {
-            var data = await unitOfWork.Products.ImportExcelFileAsync(filePath);
+            var data = await unitOfWork.Products.BulkUpdateFromFileAsync(filePath);
             return Ok(data);
         }
     }

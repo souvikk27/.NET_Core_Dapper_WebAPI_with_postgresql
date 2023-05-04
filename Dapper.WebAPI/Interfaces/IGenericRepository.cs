@@ -7,6 +7,6 @@
         Task<int> AddAsync(T entity);
         Task<int> UpdateAsync(T entity);
         Task<int> DeleteAsync(int id);
-        Task<int> ImportExcelFileAsync(string filePath);
+        Task<int> BulkUpdateFromFileAsync(string filePath);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Dapper.WebAPI.Interfaces;
+﻿using Dapper.WebAPI.Helpers;
+using Dapper.WebAPI.Interfaces;
 using Dapper.WebAPI.Repositories;
 
 namespace Dapper.WebAPI.InfraStructure
@@ -9,6 +10,7 @@ namespace Dapper.WebAPI.InfraStructure
         {
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ExcelOperations>();
         }
     }
 }
