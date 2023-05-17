@@ -44,7 +44,7 @@ namespace Dapper.WebAPI.Helpers
                 {
                     connection.Open();
                     var result = 0;
-                    // Upload or update products in the database
+                    // Upload or update Products in the database
                     foreach (var product in products)
                     {
                         var existingProduct = await connection.QueryFirstOrDefaultAsync<Products>("SELECT * FROM Products WHERE Barcode = @Barcode", new { Barcode = product.Barcode });
@@ -59,7 +59,7 @@ namespace Dapper.WebAPI.Helpers
                             result = await connection.ExecuteAsync(sql, product);
                         }
                     }
-                    //Delete Products from Database
+                    //Delete Products from Database if Product is removed from Excel file
                     var barcodesFromFile = products.Select(p => p.Barcode).ToList();
                     var barcodesFromDb = (await connection.QueryAsync<string>("SELECT Barcode FROM Products")).ToList();
                     var missingBarcodes = barcodesFromDb.Except(barcodesFromFile).ToList();
