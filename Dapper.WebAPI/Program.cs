@@ -1,14 +1,16 @@
 using Dapper.WebAPI.InfraStructure;
 using Dapper.WebAPI.Interfaces;
 using Dapper.WebAPI.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddDapperStores();
 builder.Services.AddInfraStructure();
+builder.Services.AddHelpers();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
