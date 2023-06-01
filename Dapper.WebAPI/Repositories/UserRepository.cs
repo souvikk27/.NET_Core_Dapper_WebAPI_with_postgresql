@@ -1,4 +1,5 @@
 ﻿using Dapper.WebAPI.Entities;
+using Dapper.WebAPI.Entities.Relation;
 using Dapper.WebAPI.Interfaces;
 using Npgsql;
 
@@ -13,7 +14,7 @@ namespace Dapper.WebAPI.Repositories
         public async Task<int> AddAsync(Users entity)
         {
             entity.CreatedOn = DateTime.Now;
-            var sql = "Insert into Users (FirstName,LastName,UserName,Email,Passwordhash,CreatedOn,SecurityStamp) VALUES (@FirstName,@LastName,@UserName,@Email,@Password,@CreatedOn,@SecurityStamp)";
+            var sql = "Insert into Users (Id,FirstName,LastName,UserName,Email,Passwordhash,CreatedOn,SecurityStamp) VALUES (@Id,@FirstName,@LastName,@UserName,@Email,@Password,@CreatedOn,@SecurityStamp)";
             using (var connection = new NpgsqlConnection(configuration.GetConnectionString("ConnStr")))
             {
                 connection.Open();
@@ -89,6 +90,55 @@ namespace Dapper.WebAPI.Repositories
             }
         }
 
-        
+        public async Task<string> SetUserRole(UserRoles entity)
+        {
+            const string sql = "Insert into UserRoles (userid,roleid) VALUES (@UserId, @RoleId)";
+            using(var connection = new NpgsqlConnection(configuration.GetConnectionString("ConnStr")))
+            {
+                connection.Open();
+                var result = await connection.ExecuteAsync(sql,entity);
+                if(result == 1)
+                return "User roles created successfully";
+            }
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<UserRolesRelation>> GetUserRole()
+        {
+            List<UserRolesRelation> userRoles = new List<UserRolesRelation>();
+            const string sql = "SELECT u.username, r.name FROM users u " +
+                               "JOIN userroles ur ON u.id = ur.userid " +
+                               "JOIN roles r ON ur.roleid = r.role_id ";
+            using(var connection = new NpgsqlConnection(configuration.GetConnectionString("ConnStr")))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand(sql, connection))
+                {
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (reader.Read())
+                        {
+                            var username = reader.GetString(0);
+                            var rolename = reader.GetString(1);
+
+                            var userRole = userRoles.FirstOrDefault(ur => ur.UserName == username);
+                            if (userRole == null)
+                            {
+                                userRole = new UserRolesRelation
+                                {
+                                    UserName = username,
+                                    RoleNames = new List<string>()
+                                };
+                                userRoles.Add(userRole);
+                            }
+
+                            userRole.RoleNames?.Add(rolename);
+                        }
+                    }
+                }
+                return  userRoles.ToList();
+            }
+            throw new NotImplementedException();
+        }
     }
 }

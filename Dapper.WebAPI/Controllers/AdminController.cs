@@ -33,6 +33,7 @@ namespace Dapper.WebAPI.Controllers
             var passwordHash = _passwordEncrypt.GeneratePasswordHash(dto.Password);
             Users user = new()
             {
+                Id = Guid.NewGuid().ToString(),
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 UserName = dto.UserName,
@@ -61,6 +62,34 @@ namespace Dapper.WebAPI.Controllers
             }
 
             return Ok("Logged in successfully");
+        }
+
+        [HttpPost]
+        [Route("setUserRole")]
+        public async Task<IActionResult> AssignUserRole(UserRolesDto dto)
+        {
+            foreach (var selectedRole in dto.roles)
+            {
+                UserRoles userRole = new()
+                {
+                    userid = dto.userid,
+                    roleid = selectedRole.roleid
+                };
+                var response = await _unitOfWork.Users.SetUserRole(userRole);
+                if(response == null)
+                {
+                    return BadRequest();
+                }
+            }
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("getUserRole")]
+        public async Task<IActionResult> GetAllUserRole()
+        {
+            var data = await _unitOfWork.Users.GetUserRole();
+            return Ok(data);
         }
     }
 }
