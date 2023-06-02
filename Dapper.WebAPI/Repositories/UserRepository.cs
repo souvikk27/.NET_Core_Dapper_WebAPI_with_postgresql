@@ -67,6 +67,17 @@ namespace Dapper.WebAPI.Repositories
             }
         }
 
+        public async Task<Users> FindByEmail(string Email)
+        {
+            var sql = "SELECT * FROM Users WHERE Email = @Email";
+            using (var connection = new NpgsqlConnection(configuration.GetConnectionString("ConnStr")))
+            {
+                connection.Open();
+                var result = await connection.QueryFirstOrDefaultAsync<Users>(sql, new { Email = Email });
+                return result;
+            }
+        }
+
         public async Task<string> PasswordHash(string email)
         {
             var sql = "SELECT Passwordhash from Users WHERE Email = @Email";
@@ -174,5 +185,7 @@ namespace Dapper.WebAPI.Repositories
             }
             throw new NotImplementedException();
         }
+
+        
     }
 }

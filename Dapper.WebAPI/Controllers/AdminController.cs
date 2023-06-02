@@ -15,11 +15,13 @@ namespace Dapper.WebAPI.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordEncrypt _passwordEncrypt;
+        private readonly TokenGenerator _tokenGenerator;
 
-        public AdminController(IUnitOfWork unitOfWork, PasswordEncrypt passwordEncrypt)
+        public AdminController(IUnitOfWork unitOfWork, PasswordEncrypt passwordEncrypt, TokenGenerator tokenGenerator)
         {
             _unitOfWork = unitOfWork;
             _passwordEncrypt = passwordEncrypt;
+            _tokenGenerator = tokenGenerator;
         }
 
         [HttpPost]
@@ -60,8 +62,8 @@ namespace Dapper.WebAPI.Controllers
             {
                 return BadRequest("Credentials does not match");
             }
-
-            return Ok("Logged in successfully");
+            var token = await _tokenGenerator.GenerateJwtToken(user.Email);
+            return Ok(token);
         }
 
         [HttpPost]

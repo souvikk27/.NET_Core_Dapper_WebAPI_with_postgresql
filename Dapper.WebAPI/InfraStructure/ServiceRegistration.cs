@@ -20,6 +20,7 @@ namespace Dapper.WebAPI.InfraStructure
         {
             services.AddTransient<ExcelOperations>();
             services.AddTransient<PasswordEncrypt>();
+            services.AddSingleton<TokenGenerator>();
         }
     }
 }
