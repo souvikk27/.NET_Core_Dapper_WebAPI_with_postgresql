@@ -1,5 +1,6 @@
 ﻿using Dapper.WebAPI.Entities;
 using Dapper.WebAPI.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,7 @@ namespace Dapper.WebAPI.Controllers
             this.unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
+        [HttpGet,Authorize]
         public async Task<IActionResult> GetAll()
         {
             var data = await unitOfWork.Products.GetAllAsync();
