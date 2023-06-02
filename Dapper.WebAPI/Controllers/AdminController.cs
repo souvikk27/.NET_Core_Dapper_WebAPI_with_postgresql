@@ -16,7 +16,7 @@ namespace Dapper.WebAPI.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly PasswordEncrypt _passwordEncrypt;
 
-        public AdminController(IUnitOfWork unitOfWork , PasswordEncrypt passwordEncrypt)
+        public AdminController(IUnitOfWork unitOfWork, PasswordEncrypt passwordEncrypt)
         {
             _unitOfWork = unitOfWork;
             _passwordEncrypt = passwordEncrypt;
@@ -50,7 +50,7 @@ namespace Dapper.WebAPI.Controllers
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            Users user  = new()
+            Users user = new()
             {
                 Email = dto.Email,
                 Password = dto.Password
@@ -76,7 +76,7 @@ namespace Dapper.WebAPI.Controllers
                     roleid = selectedRole.roleid
                 };
                 var response = await _unitOfWork.Users.SetUserRole(userRole);
-                if(response == null)
+                if (response == null)
                 {
                     return BadRequest();
                 }
@@ -89,6 +89,14 @@ namespace Dapper.WebAPI.Controllers
         public async Task<IActionResult> GetAllUserRole()
         {
             var data = await _unitOfWork.Users.GetUserRole();
+            return Ok(data);
+        }
+
+        [HttpGet]
+        [Route("getUserRoleById/{id}")]
+        public async Task<IActionResult> GetUserRolesById(string id)
+        {
+            var data = await _unitOfWork.Users.GetUserRoleById(id);
             return Ok(data);
         }
     }

@@ -140,5 +140,39 @@ namespace Dapper.WebAPI.Repositories
             }
             throw new NotImplementedException();
         }
+
+        public async Task<UserRolesRelation> GetUserRoleById(string id)
+        {
+            UserRolesRelation userRoles = new UserRolesRelation();
+            string sql = "SELECT u.username, r.name FROM users u " +
+                               "JOIN userroles ur ON u.id = ur.userid " +
+                               "JOIN roles r ON ur.roleid = r.role_id WHERE id = @Id";
+            using (var connection = new NpgsqlConnection(configuration.GetConnectionString("ConnStr")))
+            {
+                connection.Open();
+                using (var command = new NpgsqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("Id", id);
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (reader.Read())
+                        {
+                            var username = reader.GetString(0);
+                            var rolename = reader.GetString(1);
+
+                            if (userRoles.UserName == null)
+                            {
+                                userRoles.UserName = username;
+                                userRoles.RoleNames = new List<string>();
+                            }
+
+                            userRoles.RoleNames?.Add(rolename);
+                        }
+                    }
+                }
+                return userRoles;
+            }
+            throw new NotImplementedException();
+        }
     }
 }

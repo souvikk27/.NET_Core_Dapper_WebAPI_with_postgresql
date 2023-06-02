@@ -10,5 +10,7 @@ namespace Dapper.WebAPI.Interfaces
         public Task<string> SetUserRole(UserRoles entity);
 
         public Task<List<UserRolesRelation>> GetUserRole();
+
+        public Task<UserRolesRelation> GetUserRoleById(string id);
     }
 }
