@@ -67,17 +67,22 @@ namespace Dapper.WebAPI.Controllers
             return Ok(response);
         }
         
-        [HttpPost]
-        [Route("addRoleClaims")]
-        public async Task<IActionResult> AddRoleClaim([FromBody] RoleClaimsDto dto)
+        [HttpPut]
+        [Route("updateRoleClaims/{id}")]
+        public async Task<IActionResult> UpdateRoleClaimAsync([FromBody] RoleClaimsDto dto)
         {
+            var claims = await unitOfWork.RoleClaims.GetRoleClaimsByIdAsync(dto.RoleId);
+            if(claims != null)
+                await unitOfWork.RoleClaims.RemoveRoleClaimsAsync(dto.RoleId);
+
+            var selectedClaims = dto.claims.Where(a => a.Selected == true);
             int counter = 0;
-            foreach(var claim in dto.claims)
+            foreach(var claim in selectedClaims)
             {
                 RoleClaims roleClaims = new RoleClaims
                 {
                     RoleId = dto.RoleId,
-                    ClaimType = dto.ClaimType,
+                    ClaimType = claim.ClaimType,
                     ClaimValue = claim.ClaimValue,
                 };
                 var response = await unitOfWork.RoleClaims.AddRoleClaimsAsync(roleClaims);
@@ -89,13 +94,13 @@ namespace Dapper.WebAPI.Controllers
             return BadRequest("Invalid Operation") ;
         }
 
-        [HttpGet]
-        [Route("getRoleClaims")]
-        public async Task<IActionResult> GetAllRoleClaims()
-        {
-            var data = await unitOfWork.RoleClaims.GetAllRoleClaimsAsync();
-            return Ok(data);
-        }
+        //[HttpGet]
+        //[Route("getRoleClaims")]
+        //public async Task<IActionResult> GetAllRoleClaims()
+        //{
+        //    var data = await unitOfWork.RoleClaims.GetAllRoleClaimsAsync();
+        //    return Ok(data);
+        //}
         [HttpGet]
         [Route("getRoleClaims/{id}")]
         public async Task<IActionResult> GetRoleClaimsById(string id)

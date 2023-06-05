@@ -4,13 +4,15 @@
     {
         public string? RoleId { get; set; }
 
-        public string? ClaimType { get; set; }
-
-        public List<ClaimList> claims { get; set; }
+        public List<ClaimList>? claims { get; set; }
     }
 
     public class ClaimList
     {
+        public string? ClaimType { get; set; }
+
         public string? ClaimValue { get; set; }
+
+        public bool Selected { get; set; }
     }
 }

@@ -7,8 +7,8 @@ namespace Dapper.WebAPI.Interfaces
     {
         public Task<int> AddRoleClaimsAsync(RoleClaims roleClaims);
 
-        public Task<List<RoleClaimRelation>> GetAllRoleClaimsAsync();
-
         public Task<RoleClaimRelation> GetRoleClaimsByIdAsync(string roleId);
+
+        public Task<int> RemoveRoleClaimsAsync(string roleId);
     }
 }
