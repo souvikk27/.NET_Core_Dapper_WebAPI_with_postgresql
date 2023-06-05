@@ -3,10 +3,11 @@ using Dapper.WebAPI.Entities;
 using Dapper.WebAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace Dapper.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/roles")]
     [ApiController]
     public class RoleController : ControllerBase
     {
@@ -64,6 +65,43 @@ namespace Dapper.WebAPI.Controllers
             };
             var response = await unitOfWork.Roles.UpdateAsync(roles);
             return Ok(response);
+        }
+        
+        [HttpPost]
+        [Route("addRoleClaims")]
+        public async Task<IActionResult> AddRoleClaim([FromBody] RoleClaimsDto dto)
+        {
+            int counter = 0;
+            foreach(var claim in dto.claims)
+            {
+                RoleClaims roleClaims = new RoleClaims
+                {
+                    RoleId = dto.RoleId,
+                    ClaimType = dto.ClaimType,
+                    ClaimValue = claim.ClaimValue,
+                };
+                var response = await unitOfWork.RoleClaims.AddRoleClaimsAsync(roleClaims);
+                if (response > 0)
+                    counter++;
+            }
+            if (counter > 0)
+                return Ok(counter + " claims added for current role");
+            return BadRequest("Invalid Operation") ;
+        }
+
+        [HttpGet]
+        [Route("getRoleClaims")]
+        public async Task<IActionResult> GetAllRoleClaims()
+        {
+            var data = await unitOfWork.RoleClaims.GetAllRoleClaimsAsync();
+            return Ok(data);
+        }
+        [HttpGet]
+        [Route("getRoleClaims/{id}")]
+        public async Task<IActionResult> GetRoleClaimsById(string id)
+        {
+            var data = await unitOfWork.RoleClaims.GetRoleClaimsByIdAsync(id);
+            return Ok(data);
         }
     }
 }

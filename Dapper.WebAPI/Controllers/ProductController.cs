@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Dapper.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/items")]
     [ApiController]
     public class ProductController : ControllerBase
     {

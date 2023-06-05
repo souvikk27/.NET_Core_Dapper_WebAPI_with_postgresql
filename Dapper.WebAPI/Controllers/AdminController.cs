@@ -2,6 +2,7 @@
 using Dapper.WebAPI.Entities;
 using Dapper.WebAPI.Helpers;
 using Dapper.WebAPI.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.JSInterop.Infrastructure;
@@ -9,7 +10,7 @@ using System.Reflection;
 
 namespace Dapper.WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/auth")]
     [ApiController]
     public class AdminController : ControllerBase
     {
@@ -87,7 +88,7 @@ namespace Dapper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getUserRole")]
+        [Route("getUserRole"),Authorize]
         public async Task<IActionResult> GetAllUserRole()
         {
             var data = await _unitOfWork.Users.GetUserRole();
@@ -95,7 +96,7 @@ namespace Dapper.WebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getUserRoleById/{id}")]
+        [Route("getUserRoleById/{id}"),Authorize]
         public async Task<IActionResult> GetUserRolesById(string id)
         {
             var data = await _unitOfWork.Users.GetUserRoleById(id);

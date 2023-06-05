@@ -12,6 +12,7 @@ namespace Dapper.WebAPI.InfraStructure
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IUserRepository,  UserRepository>();
             services.AddTransient<IRoleRepository, RoleRepository>();
+            services.AddTransient<IRoleClaimRepository, RoleClaimRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
 
